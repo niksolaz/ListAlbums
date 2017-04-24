@@ -1,0 +1,19 @@
+{
+  "name": "subscribeform",
+  "version": "1.0.0",
+  "description": "Subscribe at the form with node.js to attachment to wordpress",
+  "main": "web.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niksolaz/SubscribeForm.git"
+  },
+  "author": "Nicola Solazzo (http://www.nicolasolazzo.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/niksolaz/SubscribeForm/issues"
+  },
+  "homepage": "https://github.com/niksolaz/SubscribeForm#readme"
+}
