@@ -4,16 +4,13 @@ var http = require('http');
 //create a fuction for request server
 function request_server( req, res ){
 
-	var body = 'Thanks, you are connected !!!'; //see the string on the localhost to confirm the successfull connection
-	var content_length = body.length; // info length body
-
+	console.log("INCOMING REQUEST: " +  req.method + " " + req.url );
 	//Sends a response header to the request
 	res.writeHead( 200,
 		{
-			'Content-Length': content_length,
-			'Content-Type': 'text/plain'
+			'Content-Type': 'text/json'
 		});
-	res.end( body ); // Will end the response process 
+	res.end( JSON.stringify({ error: null}) + "\n"); // Will end the response process 
 }
 
 //save the http process
