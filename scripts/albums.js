@@ -28,7 +28,7 @@ function load_album_list(callback){
 							return;
 						}
 						if(stats.isDirectory()){
-							var obj = {name: files[index]}
+							var obj = { name: files[index] }
 							only_dirs.push(obj);
 						}
 						iterator(index + 1);
@@ -48,7 +48,9 @@ function load_album(album_name,callback){
 				if(err.code == "ENOENT"){
 					callback(no_such_album());
 				}else{
-					callback(make_error("file_error",JSON.stringify(err)));
+					callback({ 
+						error: "file_error",
+						message: JSON.stringify(err) });
 				}
 				return;
 			}
@@ -105,25 +107,67 @@ function handle_incoming_request( req, res ){
 			return;
 		}
 		var out = { error : null,
-					data: { albums: albums}};
+					data: { albums: albums }};
 		res.writeHead(200, { "Content-Type":"application/json"});
 		res.end(JSON.stringify(out) + "\n");
 	});
 }
 
-function handle_list_albums(req,res){}
+function handle_list_albums(req,res){
+	load_album_list(function(err,albums){
+		if(err){
+			send_failure(res,500,err);
+			return;
+		}
 
-function handle_get_album(req,res){}
+		send_success(res,{ albums: albums });
+	});
+}
 
-function make_error(err,msg){}
+function handle_get_album(req,res){
+	var album_name = req.url.substr(7,req.url.length - 12);
+	load_album(
+		album_name,
+		function(err,album_contents){
+			if(err && err.error == "no_such_album"){
+				send_failure(res,404,err);
+			}else if(err){
+				send_failure(res,500,err);
+			}else{
+				send_success(res,{ album_name: album_contents });
+			}
+		});
+}
 
-function send_success(res,data){}
+function make_error(err,msg){
+	var e = new Error(msg);
+	e.code = err;
+	return e;
+}
 
-function send_failure(res,code,err){}
+function send_success(res,data){
+	res.writeHead(200,{ "Content-Type": "application/json"});
+	var output = { error: null, data: data };
+	res.end(JSON.stringify(output) + "\n");
+}
 
-function invalid_resource(){}
+function send_failure(res,code,err){
+	var code = (err.code) ? err.code : err.name;
+	res.writeHead(code,{ "Content-Type": "application/json"});
+	res.end(JSON.stringify({ error: code, message: err.message }) + "\n");
+}
 
-function no_such_album(){}
+function invalid_resource(){
+	return make_error(
+		"invalid_resource",
+		"the request resource does not exist.");
+}
+
+function no_such_album(){
+	return make_error(
+		"no_such_album",
+		"the specified album does not exist");
+}
 
 
 var app = http.createServer( handle_incoming_request );
