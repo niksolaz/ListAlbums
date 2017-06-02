@@ -1,5 +1,6 @@
 {
 	"name":"my_album_module",
 	"version":"1.0.0",
-	"main":"./lib/albums.js"
+	"main":"./lib/albums.js",
+	"private":true
 }
