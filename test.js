@@ -1,76 +1,15 @@
-var fs = require('fs');
+var fjs = require('functional.js');
 
-function FileObject(){
-	this.filename = '';
-	this.file_exists = function(callback){
-
-		var self = this;
-
-		console.log("About to open: " + self.filename);
-		fs.open(
-			this.filename, 'r', 
-			function(err, handle){
-				if(err){
-					console.log("Can't open this file: " + self.filename);
-					callback(err);
-					return;
-				}
-
-				var buf = new Buffer(100000);
-				fs.read(
-					handle,buf,0,100000,null,
-					function(err, length){
-						if(err){
-							console.log("ERROR: " + err.code + "(" + err.message +")");
-							return;
-						}
-						console.log(buf.toString('utf8',0,length));
-						fs.close(handle, function(){});
-					});
-
-			callback(null, true);
-		});
-	};
+function ABC(par){
+	console.log(par);
+	const add = fjs.curry((a, b) => a + b);
+ 
+	const add3 = add(3);
+	 
+	console.log(add(1, 2, 3)); // => 6 
+	console.log(add3(1, 2, 3, 4, 5)); // => 18 
 }
 
-var fo = new FileObject();
-fo.filename = "info.txt";
-
-fo.file_exists(function(err,results){
-	if(err){
-		console.log("Aw,bummer: " + JSON.stringify(err));
-		return;
-	}
-	console.log("File exists !!!");
-
-});
-
-/*
-// ---------------------------------------
-	
-	fs.open(
-		'info.txt','r',
-		function(err,handle){
-			if(err){
-				console.log("ERROR: " + err.code + "(" + err.message +")");
-				return;
-			}
-			var buf = new Buffer(100000);
-			fs.read(
-				handle,buf,0,100000,null,
-				function(err,length){
-					if(err){
-						console.log("ERROR: " + err.code + "(" + err.message +")");
-						return;
-					}
-					console.log(buf.toString('utf8',0,length));
-					fs.close(handle,function(){
-						console.log("I read file info.txt !");
-					});
-				}
-			);
-		}
-	);
-	// ---------------------------------------
-
-*/
+exports.createABC = function(par){
+	return new ABC(par);
+}
